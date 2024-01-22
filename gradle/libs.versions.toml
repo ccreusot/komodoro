@@ -1,0 +1,12 @@
+[versions]
+jewel-version = "0.13.2"
+compose-desktop-version = "1.5.10"
+kotlin-version = "1.9.20"
+
+[libraries]
+jewel-standalone = { module = "org.jetbrains.jewel:jewel-int-ui-standalone", version.ref = "jewel-version" }
+jewel-decorated = { module = "org.jetbrains.jewel:jewel-int-ui-decorated-window", version.ref = "jewel-version" }
+
+[plugins]
+compose-desktop = { id = "org.jetbrains.compose", version.ref = "compose-desktop-version" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
