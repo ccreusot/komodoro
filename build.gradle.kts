@@ -24,6 +24,15 @@ dependencies {
     implementation(libs.jewel.standalone)
     implementation(libs.jewel.decorated)
     implementation(libs.material.icons.extended)
+    implementation(libs.coroutines.core)
+
+    // Tests
+
+    testImplementation(libs.kotest)
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }
 
 compose.desktop {

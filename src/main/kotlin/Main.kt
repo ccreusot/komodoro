@@ -1,11 +1,12 @@
+
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.rounded.PlayCircle
+import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -13,11 +14,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.*
+import androidx.compose.ui.window.Tray
+import androidx.compose.ui.window.TrayState
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
 import org.jetbrains.jewel.foundation.enableNewSwingCompositing
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.foundation.theme.LocalTextStyle
@@ -28,8 +31,6 @@ import org.jetbrains.jewel.ui.ComponentStyling
 import org.jetbrains.jewel.ui.component.Icon
 import org.jetbrains.jewel.ui.component.IconButton
 import org.jetbrains.jewel.ui.component.Text
-import org.jetbrains.jewel.ui.component.painterResource
-import java.awt.TrayIcon
 
 
 object Colors {
@@ -64,7 +65,7 @@ fun App() {
 
                     IconButton(onClick = {}) {
                         Icon(
-                            imageVector = Icons.Filled.Stop,
+                            imageVector = Icons.Rounded.Stop,
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier
@@ -84,7 +85,7 @@ fun App() {
 
                     IconButton(onClick = {}) {
                         Icon(
-                            imageVector = Icons.Filled.SkipNext,
+                            imageVector = Icons.Rounded.SkipNext,
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier
@@ -127,7 +128,7 @@ fun main() = application {
         },
     )
 
-    trayState.sendNotification(Notification(title = "Komodoro", message = "Started", type = Notification.Type.Info))
+//    trayState.sendNotification(Notification(title = "Komodoro", message = "Started", type = Notification.Type.Info))
 
     Window(
         onCloseRequest = ::exitApplication,
