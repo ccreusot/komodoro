@@ -23,6 +23,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(libs.jewel.standalone)
     implementation(libs.jewel.decorated)
+    implementation(libs.material.icons.extended)
 }
 
 compose.desktop {
