@@ -121,7 +121,7 @@ fun main() = application {
     val trayState = remember { TrayState() }
 
     Tray(
-        icon = painterResource("icons/timer.png"),
+        icon = painterResource("icons/timer.svg"),
         state = trayState,
         menu = {
             Item("Exit", onClick = ::exitApplication)
