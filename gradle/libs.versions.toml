@@ -4,6 +4,7 @@ compose-desktop-version = "1.6.0-beta01"
 kotlin-version = "1.9.21"
 coroutines-version = "1.8.0-RC2"
 kotest-version = "5.8.0"
+turbine-version = "1.0.0"
 
 [libraries]
 jewel-standalone = { module = "org.jetbrains.jewel:jewel-int-ui-standalone", version.ref = "jewel-version" }
@@ -11,6 +12,7 @@ jewel-decorated = { module = "org.jetbrains.jewel:jewel-int-ui-decorated-window"
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-desktop-version" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines-version" }
 kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine-version" }
 
 [plugins]
 compose-desktop = { id = "org.jetbrains.compose", version.ref = "compose-desktop-version" }

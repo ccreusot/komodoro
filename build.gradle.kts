@@ -29,6 +29,7 @@ dependencies {
     // Tests
 
     testImplementation(libs.kotest)
+    testImplementation(libs.turbine)
 }
 
 tasks.named<Test>("test") {
