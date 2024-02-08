@@ -2,7 +2,6 @@ package fr.cedriccreusot.viewmodel
 
 import app.cash.turbine.test
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.time.Duration.Companion.milliseconds
@@ -42,14 +41,22 @@ class PomodoroViewModelTest : FunSpec() {
             coroutineTestScope = true
         ) {
             val viewModel = PomodoroViewModel(duration = 3.seconds)
-            val collectedEvents = mutableListOf<PomodoroState>()
             viewModel.start()
             viewModel.state.test(timeout = 4.seconds) {
-                collectedEvents.add(awaitItem())
-                collectedEvents.add(awaitItem())
+                skipItems(1)
+                awaitItem() shouldBe PomodoroState.Pomodoro.Running(2.seconds)
             }
+        }
 
-            collectedEvents shouldContain PomodoroState.Pomodoro.Running(2.seconds)
+        test("Given the viewModel is initialized, when we start the pomodoro, it should return a state Finished when all the time is elapsed").config(
+            coroutineTestScope = true
+        ) {
+            val viewModel = PomodoroViewModel(duration = 1.seconds)
+            viewModel.start()
+            viewModel.state.test(timeout = 2.seconds) {
+                skipItems(2)
+                awaitItem() shouldBe PomodoroState.Pomodoro.Finished
+            }
         }
     }
 }
