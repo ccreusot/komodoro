@@ -20,16 +20,23 @@ class PomodoroViewModel(duration: Duration = 25.minutes, val pomodoroMax: Int = 
     private val _state = MutableStateFlow<PomodoroState>(PomodoroState.Pomodoro.Idle(duration))
     val state = _state.asStateFlow()
 
-    private var timer: Job? = null
+    private val viewModelScope = CoroutineScope(Dispatchers.Default)
+    private var jobTimer: Job? = null
 
-    fun start(dispatcher: CoroutineDispatcher = Dispatchers.Default) {
-        timer = CoroutineScope(dispatcher).async {
+    fun start() {
+        jobTimer = viewModelScope.launch {
             while(isActive && state.value.duration > 0.seconds) {
                 delay(1.seconds)
                 _state.emit(PomodoroState.Pomodoro.Running(state.value.duration - 1.seconds))
             }
             _state.emit(PomodoroState.Pomodoro.Finished)
-            0
+        }
+    }
+
+    fun pause() {
+        jobTimer?.cancel()
+        viewModelScope.launch {
+            _state.emit(PomodoroState.Pomodoro.Idle(state.value.duration))
         }
     }
 }

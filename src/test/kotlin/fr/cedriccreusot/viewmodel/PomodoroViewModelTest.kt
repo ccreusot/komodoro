@@ -2,8 +2,11 @@ package fr.cedriccreusot.viewmodel
 
 import app.cash.turbine.test
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.core.test.testCoroutineScheduler
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -41,21 +44,39 @@ class PomodoroViewModelTest : FunSpec() {
             coroutineTestScope = true
         ) {
             val viewModel = PomodoroViewModel(duration = 3.seconds)
-            viewModel.start()
-            viewModel.state.test(timeout = 4.seconds) {
-                skipItems(1)
-                awaitItem() shouldBe PomodoroState.Pomodoro.Running(2.seconds)
+            val dispatcher = UnconfinedTestDispatcher(testCoroutineScheduler)
+
+            // I am trying to test like this because it will likely be this way in the future
+            val job = launch(dispatcher) {
+                viewModel.state.test(timeout = 4.seconds) {
+                    skipItems(1)
+                    awaitItem() shouldBe PomodoroState.Pomodoro.Running(2.seconds)
+                }
             }
+
+            viewModel.start()
+
+            job.join()
         }
 
         test("Given the viewModel is initialized, when we start the pomodoro, it should return a state Finished when all the time is elapsed").config(
             coroutineTestScope = true
         ) {
             val viewModel = PomodoroViewModel(duration = 1.seconds)
-            viewModel.start()
             viewModel.state.test(timeout = 2.seconds) {
+                viewModel.start()
                 skipItems(2)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Finished
+            }
+        }
+
+        test("Given the viewModel and the pomodoro is started, when we call pause it should pause the pomodoro") {
+            val viewModel = PomodoroViewModel(duration = 5.seconds)
+            viewModel.state.test {
+                viewModel.start()
+                skipItems(3)
+                viewModel.pause()
+                awaitItem() shouldBe PomodoroState.Pomodoro.Idle(3.seconds)
             }
         }
     }
