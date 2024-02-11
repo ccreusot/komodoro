@@ -39,7 +39,7 @@ class PomodoroViewModelTest : FunSpec() {
             coroutineTestScope = true
         ) {
             val viewModel = PomodoroViewModel(pomodoroDuration = 3.seconds)
-            viewModel.state.test(timeout = 4.seconds) {
+            viewModel.state.test {
                 viewModel.start()
                 skipItems(1)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Running(2.seconds)
@@ -50,14 +50,14 @@ class PomodoroViewModelTest : FunSpec() {
             coroutineTestScope = true
         ) {
             val viewModel = PomodoroViewModel(pomodoroDuration = 1.seconds)
-            viewModel.state.test(timeout = 2.seconds) {
+            viewModel.state.test {
                 viewModel.start()
                 skipItems(2)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Finished
             }
         }
 
-        test("Given the viewModel and the pomodoro is started, when we call pause it should pause the pomodoro") {
+        test("Given the viewModel and the pomodoro is started, when we call pause it should pause the pomodoro").config(coroutineTestScope = true) {
             val viewModel = PomodoroViewModel(pomodoroDuration = 5.seconds)
             viewModel.state.test {
                 viewModel.start()
@@ -67,7 +67,7 @@ class PomodoroViewModelTest : FunSpec() {
             }
         }
 
-        test("Given the viewModel is started, when we call next it should return to the next state from Pomodoro to Break if the counter of Pomodoro is less than the max count") {
+        test("Given the viewModel is started, when we call next it should return to the next state from Pomodoro to Break if the counter of Pomodoro is less than the max count").config(coroutineTestScope = true) {
             val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 5.seconds)
             viewModel.state.test {
                 viewModel.start()
@@ -77,15 +77,35 @@ class PomodoroViewModelTest : FunSpec() {
             }
         }
 
-        test("Given the viewModel is started on break, if the break is paused, it should return the break state in pause") {
+        test("Given the viewModel is started on break, if the break is paused, it should return the break state in pause").config(coroutineTestScope = true) {
             val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 5.seconds, breakDuration = 4.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(2)
+                skipItems(1)
                 viewModel.next()
-                skipItems(2)
+                skipItems(1)
                 viewModel.pause()
-                awaitItem() shouldBe PomodoroState.Break.Idle(3.seconds)
+                awaitItem() shouldBe PomodoroState.Break.Idle(4.seconds)
+            }
+        }
+
+        test("Given the viewModel started at the end of the time, the next state should be the Break one").config(coroutineTestScope = true) {
+            val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 1.seconds)
+            viewModel.state.test {
+                viewModel.start()
+                skipItems(3)
+                awaitItem() shouldBe PomodoroState.Break.Running(5.minutes)
+            }
+        }
+
+        test("Givent the viewModel is at the end of the break, the next state should be the Pomodoro one").config(coroutineTestScope = true) {
+            val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 3.seconds, breakDuration = 1.seconds)
+            viewModel.state.test {
+                viewModel.start()
+                skipItems(1)
+                viewModel.next()
+                skipItems(3)
+                awaitItem() shouldBe PomodoroState.Pomodoro.Running(3.seconds)
             }
         }
     }
