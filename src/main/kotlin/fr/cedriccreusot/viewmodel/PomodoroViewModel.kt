@@ -13,11 +13,17 @@ sealed class PomodoroState(open val duration: Duration) {
         data class Idle(override val duration: Duration) : Pomodoro(duration)
         data class Running(override val duration: Duration) : Pomodoro(duration)
     }
+
+    sealed class Break(override val duration: Duration) : PomodoroState(duration) {
+
+        data class Idle(override val duration: Duration) : Break(duration)
+        data class Running(override val duration: Duration) : Break(duration)
+    }
 }
 
-class PomodoroViewModel(duration: Duration = 25.minutes, val pomodoroMax: Int = 4) {
+class PomodoroViewModel(private val pomodoroDuration: Duration = 25.minutes, private val breakDuration: Duration = 5.minutes, val pomodoroMax: Int = 4) {
 
-    private val _state = MutableStateFlow<PomodoroState>(PomodoroState.Pomodoro.Idle(duration))
+    private val _state = MutableStateFlow<PomodoroState>(PomodoroState.Pomodoro.Idle(pomodoroDuration))
     val state = _state.asStateFlow()
 
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
@@ -27,7 +33,12 @@ class PomodoroViewModel(duration: Duration = 25.minutes, val pomodoroMax: Int = 
         jobTimer = viewModelScope.launch {
             while(isActive && state.value.duration > 0.seconds) {
                 delay(1.seconds)
-                _state.emit(PomodoroState.Pomodoro.Running(state.value.duration - 1.seconds))
+                val nextDuration = state.value.duration - 1.seconds
+                when (state.value) {
+                    is PomodoroState.Pomodoro -> _state.emit(PomodoroState.Pomodoro.Running(nextDuration))
+                    is PomodoroState.Break -> _state.emit(PomodoroState.Break.Running(nextDuration))
+                    else -> Unit
+                }
             }
             _state.emit(PomodoroState.Pomodoro.Finished)
         }
@@ -37,6 +48,16 @@ class PomodoroViewModel(duration: Duration = 25.minutes, val pomodoroMax: Int = 
         jobTimer?.cancel()
         viewModelScope.launch {
             _state.emit(PomodoroState.Pomodoro.Idle(state.value.duration))
+        }
+    }
+
+    fun next() {
+        jobTimer?.cancel()
+        viewModelScope.launch {
+            if (state.value is PomodoroState.Pomodoro) {
+                _state.emit(PomodoroState.Break.Running(breakDuration))
+                start()
+            }
         }
     }
 }
