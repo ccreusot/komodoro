@@ -98,7 +98,7 @@ class PomodoroViewModelTest : FunSpec() {
             }
         }
 
-        test("Givent the viewModel is at the end of the break, the next state should be the Pomodoro one").config(coroutineTestScope = true) {
+        test("Given the viewModel is at the end of the break, the next state should be the Pomodoro one").config(coroutineTestScope = true) {
             val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 3.seconds, breakDuration = 1.seconds)
             viewModel.state.test {
                 viewModel.start()
@@ -106,6 +106,26 @@ class PomodoroViewModelTest : FunSpec() {
                 viewModel.next()
                 skipItems(3)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Running(3.seconds)
+            }
+        }
+
+        test("Gien the viewModel is at the end of the last pomodoro, the next state should be LongBreak").config(coroutineTestScope = true) {
+            val viewModel = PomodoroViewModel(pomodoroMax = 1, pomodoroDuration = 1.seconds, longBreakDuration = 2.seconds)
+
+            viewModel.state.test {
+                viewModel.start()
+                skipItems(3)
+                awaitItem() shouldBe PomodoroState.LongBreak.Running(2.seconds)
+            }
+        }
+
+        test("Given the viewModel is at the end of the long break, the next state should be Pomodoro").config(coroutineTestScope = true) {
+            val viewModel = PomodoroViewModel(pomodoroMax = 1, pomodoroDuration = 1.seconds, longBreakDuration = 1.seconds)
+
+            viewModel.state.test {
+                viewModel.start()
+                skipItems(6)
+                awaitItem() shouldBe PomodoroState.Pomodoro.Running(1.seconds)
             }
         }
     }

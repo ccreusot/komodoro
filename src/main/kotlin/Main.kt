@@ -8,6 +8,7 @@ import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -21,6 +22,7 @@ import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.TrayState
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import fr.cedriccreusot.viewmodel.PomodoroViewModel
 import org.jetbrains.jewel.foundation.enableNewSwingCompositing
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.foundation.theme.LocalTextStyle
@@ -44,18 +46,24 @@ object Colors {
 fun App() {
     val themeDefinition = JewelTheme.darkThemeDefinition()
 
+    val viewModel = remember { PomodoroViewModel() }
+
     IntUiTheme(
         theme = themeDefinition,
         styling = ComponentStyling.decoratedWindow(),
         swingCompatMode = true,
     ) {
+        val state = viewModel.state.collectAsState()
+
+
+
         Box(modifier = Modifier.fillMaxSize().background(Color(Colors.RED))) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.align(Alignment.Center)) {
                 Text(
-                    "XX:XX:XX", style = LocalTextStyle.current.copy(
+                    "${state.value.duration.inWholeSeconds}", style = LocalTextStyle.current.copy(
                         color = Color.White,
                         fontSize = 92.sp,
                         fontWeight = FontWeight.Bold),
@@ -73,7 +81,9 @@ fun App() {
                         )
                     }
 
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        viewModel.start()
+                    }) {
                         Icon(
                             imageVector = Icons.Rounded.PlayCircle,
                             contentDescription = null,
@@ -93,7 +103,6 @@ fun App() {
                         )
                     }
                 }
-
             }
             LazyRow(
                 contentPadding = PaddingValues(4.dp),
