@@ -1,10 +1,12 @@
 [versions]
 jewel-version = "0.13.2"
 compose-desktop-version = "1.6.0-beta01"
-kotlin-version = "1.9.21"
+kotlin-version = "1.9.22"
 coroutines-version = "1.8.0-RC2"
 kotest-version = "5.8.0"
 turbine-version = "1.0.0"
+detekt-version = "1.23.5"
+detekt-compose-rules-version = "0.3.11"
 
 [libraries]
 jewel-standalone = { module = "org.jetbrains.jewel:jewel-int-ui-standalone", version.ref = "jewel-version" }
@@ -13,7 +15,10 @@ material-icons-extended = { module = "org.jetbrains.compose.material:material-ic
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines-version" }
 kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine-version" }
+detekt-compose-rules = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose-rules-version" }
+
 
 [plugins]
 compose-desktop = { id = "org.jetbrains.compose", version.ref = "compose-desktop-version" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-version" }

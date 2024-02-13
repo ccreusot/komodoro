@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.compose.desktop)
+    alias(libs.plugins.detekt)
 }
 
 group = "fr.cedriccreusot"
@@ -26,10 +27,18 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.coroutines.core)
 
-    // Tests
+    // Detekt
+    detektPlugins(libs.detekt.compose.rules)
 
+    // Tests
     testImplementation(libs.kotest)
     testImplementation(libs.turbine)
+}
+
+detekt {
+    toolVersion = libs.versions.detekt.version.get()
+
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
 }
 
 tasks.named<Test>("test") {

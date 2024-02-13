@@ -42,7 +42,6 @@ object Colors {
 }
 
 @Composable
-@Preview
 fun App() {
     val themeDefinition = JewelTheme.darkThemeDefinition()
 
@@ -69,40 +68,11 @@ fun App() {
                         fontWeight = FontWeight.Bold),
                     )
                 Spacer(modifier = Modifier.height(32.dp))
-                Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Rounded.Stop,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(100.dp)
-                        )
-                    }
-
-                    IconButton(onClick = {
-                        viewModel.start()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Rounded.PlayCircle,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(128.dp)
-                        )
-                    }
-
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Rounded.SkipNext,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(100.dp)
-                        )
-                    }
-                }
+                PomodoroControl(
+                    onStop = { },
+                    onStart = { viewModel.start() },
+                    onNext = { viewModel.next() }
+                )
             }
             LazyRow(
                 contentPadding = PaddingValues(4.dp),
@@ -119,6 +89,45 @@ fun App() {
                     Spacer(modifier = Modifier.width(4.dp))
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun PomodoroControl(onStop : () -> Unit, onStart : () -> Unit, onNext : () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        IconButton(onClick = onStop) {
+            Icon(
+                imageVector = Icons.Rounded.Stop,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .size(100.dp)
+            )
+        }
+
+        IconButton(onClick = onStart) {
+            Icon(
+                imageVector = Icons.Rounded.PlayCircle,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .size(128.dp)
+            )
+        }
+
+        IconButton(onClick = onNext) {
+            Icon(
+                imageVector = Icons.Rounded.SkipNext,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .size(100.dp)
+            )
         }
     }
 }
@@ -145,4 +154,11 @@ fun main() = application {
     ) {
         App()
     }
+}
+
+
+@Composable
+@Preview
+private fun AppPreview() {
+    App()
 }
