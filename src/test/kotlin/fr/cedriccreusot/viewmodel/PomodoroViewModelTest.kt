@@ -16,6 +16,7 @@ class PomodoroViewModelTest : FunSpec() {
 
             viewModel.state.value shouldBe PomodoroState.Pomodoro.Idle(25.minutes)
             viewModel.pomodoroMax shouldBe 4
+            viewModel.pomodoroCount.value shouldBe 0
         }
 
         test("Given a number of pomodoro is set to 2, when a PomodoroViewModel is created, it should return a state that is not started with the default duration and have the number of pomodoro max defined to 2").config(
@@ -25,6 +26,7 @@ class PomodoroViewModelTest : FunSpec() {
 
             viewModel.state.value shouldBe PomodoroState.Pomodoro.Idle(25.minutes)
             viewModel.pomodoroMax shouldBe 2
+            viewModel.pomodoroCount.value shouldBe 0
         }
 
         test("Given a duration is set in milliseconds, when subscribe to the timer view model, it should return a state that is not started with the same start duration").config(
@@ -43,6 +45,7 @@ class PomodoroViewModelTest : FunSpec() {
                 viewModel.start()
                 skipItems(1)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Running(2.seconds)
+                viewModel.pomodoroCount.value shouldBe 0
             }
         }
 
@@ -54,6 +57,7 @@ class PomodoroViewModelTest : FunSpec() {
                 viewModel.start()
                 skipItems(2)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Finished
+                viewModel.pomodoroCount.value shouldBe 0
             }
         }
 
@@ -64,6 +68,7 @@ class PomodoroViewModelTest : FunSpec() {
                 skipItems(3)
                 viewModel.pause()
                 awaitItem() shouldBe PomodoroState.Pomodoro.Idle(3.seconds)
+                viewModel.pomodoroCount.value shouldBe 0
             }
         }
 
@@ -74,6 +79,7 @@ class PomodoroViewModelTest : FunSpec() {
                 skipItems(2)
                 viewModel.next()
                 awaitItem() shouldBe PomodoroState.Break.Running(5.minutes)
+                viewModel.pomodoroCount.value shouldBe 1
             }
         }
 
@@ -86,6 +92,7 @@ class PomodoroViewModelTest : FunSpec() {
                 skipItems(1)
                 viewModel.pause()
                 awaitItem() shouldBe PomodoroState.Break.Idle(4.seconds)
+                viewModel.pomodoroCount.value shouldBe 1
             }
         }
 
@@ -95,6 +102,7 @@ class PomodoroViewModelTest : FunSpec() {
                 viewModel.start()
                 skipItems(3)
                 awaitItem() shouldBe PomodoroState.Break.Running(5.minutes)
+                viewModel.pomodoroCount.value shouldBe 1
             }
         }
 
@@ -106,6 +114,7 @@ class PomodoroViewModelTest : FunSpec() {
                 viewModel.next()
                 skipItems(3)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Running(3.seconds)
+                viewModel.pomodoroCount.value shouldBe 1
             }
         }
 
@@ -116,6 +125,7 @@ class PomodoroViewModelTest : FunSpec() {
                 viewModel.start()
                 skipItems(3)
                 awaitItem() shouldBe PomodoroState.LongBreak.Running(2.seconds)
+                viewModel.pomodoroCount.value shouldBe 0
             }
         }
 
@@ -126,6 +136,7 @@ class PomodoroViewModelTest : FunSpec() {
                 viewModel.start()
                 skipItems(6)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Running(1.seconds)
+                viewModel.pomodoroCount.value shouldBe 0
             }
         }
     }

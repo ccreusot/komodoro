@@ -33,7 +33,8 @@ class PomodoroViewModel(private val pomodoroDuration: Duration = 25.minutes, pri
     private val _state = MutableStateFlow<PomodoroState>(PomodoroState.Pomodoro.Idle(pomodoroDuration))
     val state = _state.asStateFlow()
 
-    private var pomodoroCount = 1
+    private val _pomodoroCount = MutableStateFlow(0)
+    val pomodoroCount = _pomodoroCount.asStateFlow()
 
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
     private var jobTimer: Job? = null
@@ -74,22 +75,26 @@ class PomodoroViewModel(private val pomodoroDuration: Duration = 25.minutes, pri
         jobTimer?.cancel()
         viewModelScope.launch {
             if (state.value is PomodoroState.Pomodoro) {
-                if (pomodoroCount == pomodoroMax) {
+                if (pomodoroCount.value + 1 == pomodoroMax) {
                     _state.emit(PomodoroState.LongBreak.Running(longBreakDuration))
                     start()
                     return@launch
                 }
+                _pomodoroCount.inc()
                 _state.emit(PomodoroState.Break.Running(breakDuration))
                 start()
             } else if (state.value is PomodoroState.Break) {
-                pomodoroCount++
                 _state.emit(PomodoroState.Pomodoro.Running(pomodoroDuration))
                 start()
             } else if (state.value is PomodoroState.LongBreak) {
-                pomodoroCount = 1
+                _pomodoroCount.emit(0)
                 _state.emit(PomodoroState.Pomodoro.Running(pomodoroDuration))
                 start()
             }
         }
+    }
+
+    private suspend fun MutableStateFlow<Int>.inc() {
+        emit(this.value + 1)
     }
 }
