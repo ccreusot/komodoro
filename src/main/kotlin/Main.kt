@@ -42,7 +42,7 @@ object Colors {
 }
 
 @Composable
-fun App() {
+fun App(modifier: Modifier = Modifier) {
     val themeDefinition = JewelTheme.darkThemeDefinition()
 
     val viewModel = remember { PomodoroViewModel() }
@@ -54,9 +54,7 @@ fun App() {
     ) {
         val state = viewModel.state.collectAsState()
 
-
-
-        Box(modifier = Modifier.fillMaxSize().background(Color(Colors.RED))) {
+        Box(modifier = modifier.fillMaxSize().background(Color(Colors.RED))) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
