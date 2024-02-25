@@ -7,28 +7,12 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-sealed class PomodoroState(open val duration: Duration) {
-    sealed class Pomodoro(override val duration: Duration) : PomodoroState(duration) {
-        object Finished : Pomodoro(0.seconds)
-        data class Idle(override val duration: Duration) : Pomodoro(duration)
-        data class Running(override val duration: Duration) : Pomodoro(duration)
-    }
-
-    sealed class Break(override val duration: Duration) : PomodoroState(duration) {
-        object Finished : Break(0.seconds)
-
-        data class Idle(override val duration: Duration) : Break(duration)
-        data class Running(override val duration: Duration) : Break(duration)
-    }
-
-    sealed class LongBreak(override val duration: Duration) : PomodoroState(duration) {
-        object Finished : LongBreak(0.seconds)
-        data class Idle(override val duration: Duration) : LongBreak(duration)
-        data class Running(override val duration: Duration) : LongBreak(duration)
-    }
-}
-
-class PomodoroViewModel(private val pomodoroDuration: Duration = 25.minutes, private val breakDuration: Duration = 5.minutes, private val longBreakDuration: Duration = 15.minutes, val pomodoroMax: Int = 4) {
+class PomodoroViewModel(
+    private val pomodoroDuration: Duration = 25.minutes,
+    private val breakDuration: Duration = 5.minutes,
+    private val longBreakDuration: Duration = 15.minutes,
+    val pomodoroMax: Int = 4
+) {
 
     private val _state = MutableStateFlow<PomodoroState>(PomodoroState.Pomodoro.Idle(pomodoroDuration))
     val state = _state.asStateFlow()
@@ -42,7 +26,7 @@ class PomodoroViewModel(private val pomodoroDuration: Duration = 25.minutes, pri
     fun start() {
         jobTimer?.cancel()
         jobTimer = viewModelScope.launch {
-            while(isActive && state.value.duration > 0.seconds) {
+            while (isActive && state.value.duration > 0.seconds) {
                 delay(1.seconds)
                 val nextDuration = state.value.duration - 1.seconds
                 when (state.value) {
