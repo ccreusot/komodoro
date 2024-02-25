@@ -94,6 +94,14 @@ class PomodoroViewModel(private val pomodoroDuration: Duration = 25.minutes, pri
         }
     }
 
+    fun stop() {
+        jobTimer?.cancel()
+        viewModelScope.launch {
+            _pomodoroCount.emit(0)
+            _state.emit(PomodoroState.Pomodoro.Idle(pomodoroDuration))
+        }
+    }
+
     private suspend fun MutableStateFlow<Int>.inc() {
         emit(this.value + 1)
     }

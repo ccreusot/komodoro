@@ -139,5 +139,16 @@ class PomodoroViewModelTest : FunSpec() {
                 viewModel.pomodoroCount.value shouldBe 0
             }
         }
+
+        test("Given the viewModel is started, when we call stop it should reset the pomodoro").config(coroutineTestScope = true) {
+            val viewModel = PomodoroViewModel(pomodoroDuration = 5.seconds)
+            viewModel.state.test {
+                viewModel.start()
+                skipItems(3)
+                viewModel.stop()
+                awaitItem() shouldBe PomodoroState.Pomodoro.Idle(5.seconds)
+                viewModel.pomodoroCount.value shouldBe 0
+            }
+        }
     }
 }
