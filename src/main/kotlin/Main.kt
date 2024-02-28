@@ -1,13 +1,11 @@
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -24,6 +22,7 @@ import fr.cedriccreusot.extension.formatToMinutesAndSeconds
 import fr.cedriccreusot.theme.PomodoroColors
 import fr.cedriccreusot.viewmodel.PomodoroState
 import fr.cedriccreusot.viewmodel.PomodoroViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.foundation.enableNewSwingCompositing
 import org.jetbrains.jewel.foundation.theme.JewelTheme
@@ -35,8 +34,10 @@ import org.jetbrains.jewel.ui.ComponentStyling
 import org.jetbrains.jewel.ui.component.Text
 
 @Composable
-fun App(modifier: Modifier = Modifier) {
-    val viewModel = remember { PomodoroViewModel() }
+fun App(pomodoroStateChange: () -> Unit, modifier: Modifier = Modifier) {
+    val viewModel = remember {
+        PomodoroViewModel()
+    }
 
     fun backgroundColorFromState(state: PomodoroState): Color {
         return when (state) {
@@ -53,6 +54,37 @@ fun App(modifier: Modifier = Modifier) {
         label = "backgroundColor",
         animationSpec = tween(500)
     )
+
+    MainScreen(backgroundColor, state, viewModel, pomodoroStep, pomodoroStateChange, modifier)
+}
+
+@Composable
+private fun MainScreen(
+    backgroundColor: Color,
+    state: PomodoroState,
+    viewModel: PomodoroViewModel,
+    pomodoroStep: Int,
+    pomodoroStateChange: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+
+    var previousState: Class<out PomodoroState> by remember {
+        mutableStateOf(PomodoroState.Pomodoro::class.java)
+    }
+
+    fun currentState(state: PomodoroState) =
+        when (state) {
+            is PomodoroState.Pomodoro -> PomodoroState.Pomodoro::class.java
+            is PomodoroState.Break -> PomodoroState.Break::class.java
+            is PomodoroState.LongBreak -> PomodoroState.LongBreak::class.java
+        }
+
+    LaunchedEffect(state) {
+        if (previousState != currentState(state)) {
+            pomodoroStateChange()
+        }
+        previousState = currentState(state)
+    }
 
     Box(modifier = modifier.fillMaxSize().background(backgroundColor)) {
         Column(
@@ -78,7 +110,7 @@ fun App(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalJewelApi::class)
+@OptIn(ExperimentalJewelApi::class, ExperimentalComposeUiApi::class)
 fun main() = application {
     enableNewSwingCompositing()
 
@@ -93,15 +125,28 @@ fun main() = application {
         },
     )
 
+    // To bring the app to front when the app trigger a pomodoro state change
+    var windowOnTop by remember { mutableStateOf(false) }
+
     Window(
-        onCloseRequest = ::exitApplication, title = "Komodoro"
+        onCloseRequest = ::exitApplication, title = "Komodoro",
+        alwaysOnTop = windowOnTop,
     ) {
         IntUiTheme(
             theme = themeDefinition,
             styling = ComponentStyling.decoratedWindow(),
             swingCompatMode = true,
         ) {
-            App()
+            LaunchedEffect(windowOnTop) {
+                window.requestFocus()
+                window.toFront()
+                delay(200L)
+                windowOnTop = false
+            }
+
+            App({
+                windowOnTop = true
+            })
         }
     }
 }
