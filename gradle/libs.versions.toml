@@ -1,6 +1,6 @@
 [versions]
 jewel-version = "0.13.2"
-compose-desktop-version = "1.6.0-beta01"
+compose-desktop-version = "1.6.0"
 kotlin-version = "1.9.22"
 coroutines-version = "1.8.0-RC2"
 kotest-version = "5.8.0"
