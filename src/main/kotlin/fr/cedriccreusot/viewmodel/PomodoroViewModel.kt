@@ -58,22 +58,28 @@ class PomodoroViewModel(
     fun next() {
         jobTimer?.cancel()
         viewModelScope.launch {
-            if (state.value is PomodoroState.Pomodoro) {
-                if (pomodoroCount.value + 1 == pomodoroMax) {
-                    _state.emit(PomodoroState.LongBreak.Running(longBreakDuration))
+            when (state.value) {
+                is PomodoroState.Pomodoro -> {
+                    if (pomodoroCount.value + 1 == pomodoroMax) {
+                        _state.emit(PomodoroState.LongBreak.Running(longBreakDuration))
+                        start()
+                        return@launch
+                    }
+                    _pomodoroCount.inc()
+                    _state.emit(PomodoroState.Break.Running(breakDuration))
                     start()
-                    return@launch
                 }
-                _pomodoroCount.inc()
-                _state.emit(PomodoroState.Break.Running(breakDuration))
-                start()
-            } else if (state.value is PomodoroState.Break) {
-                _state.emit(PomodoroState.Pomodoro.Running(pomodoroDuration))
-                start()
-            } else if (state.value is PomodoroState.LongBreak) {
-                _pomodoroCount.emit(0)
-                _state.emit(PomodoroState.Pomodoro.Running(pomodoroDuration))
-                start()
+
+                is PomodoroState.Break -> {
+                    _state.emit(PomodoroState.Pomodoro.Running(pomodoroDuration))
+                    start()
+                }
+
+                is PomodoroState.LongBreak -> {
+                    _pomodoroCount.emit(0)
+                    _state.emit(PomodoroState.Pomodoro.Running(pomodoroDuration))
+                    start()
+                }
             }
         }
     }
