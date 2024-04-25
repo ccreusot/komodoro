@@ -43,7 +43,7 @@ class PomodoroViewModelTest : FunSpec() {
             val viewModel = PomodoroViewModel(pomodoroDuration = 3.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(1)
+                skipItems(2)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Running(2.seconds)
                 viewModel.pomodoroCount.value shouldBe 0
             }
@@ -55,7 +55,7 @@ class PomodoroViewModelTest : FunSpec() {
             val viewModel = PomodoroViewModel(pomodoroDuration = 1.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(2)
+                skipItems(3)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Finished
                 viewModel.pomodoroCount.value shouldBe 0
             }
@@ -67,7 +67,7 @@ class PomodoroViewModelTest : FunSpec() {
             val viewModel = PomodoroViewModel(pomodoroDuration = 5.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(3)
+                skipItems(4)
                 viewModel.pause()
                 awaitItem() shouldBe PomodoroState.Pomodoro.Idle(3.seconds)
                 viewModel.pomodoroCount.value shouldBe 0
@@ -80,7 +80,7 @@ class PomodoroViewModelTest : FunSpec() {
             val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 5.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(2)
+                skipItems(3)
                 viewModel.next()
                 awaitItem() shouldBe PomodoroState.Break.Running(5.minutes)
                 viewModel.pomodoroCount.value shouldBe 1
@@ -93,7 +93,7 @@ class PomodoroViewModelTest : FunSpec() {
             val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 5.seconds, breakDuration = 4.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(1)
+                skipItems(2)
                 viewModel.next()
                 skipItems(1)
                 viewModel.pause()
@@ -108,7 +108,7 @@ class PomodoroViewModelTest : FunSpec() {
             val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 1.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(3)
+                skipItems(4)
                 awaitItem() shouldBe PomodoroState.Break.Running(5.minutes)
                 viewModel.pomodoroCount.value shouldBe 1
             }
@@ -120,7 +120,7 @@ class PomodoroViewModelTest : FunSpec() {
             val viewModel = PomodoroViewModel(pomodoroMax = 2, pomodoroDuration = 3.seconds, breakDuration = 1.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(1)
+                skipItems(2)
                 viewModel.next()
                 skipItems(3)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Running(3.seconds)
@@ -136,7 +136,7 @@ class PomodoroViewModelTest : FunSpec() {
 
             viewModel.state.test {
                 viewModel.start()
-                skipItems(3)
+                skipItems(4)
                 awaitItem() shouldBe PomodoroState.LongBreak.Running(2.seconds)
                 viewModel.pomodoroCount.value shouldBe 0
             }
@@ -150,7 +150,7 @@ class PomodoroViewModelTest : FunSpec() {
 
             viewModel.state.test {
                 viewModel.start()
-                skipItems(6)
+                skipItems(7)
                 awaitItem() shouldBe PomodoroState.Pomodoro.Running(1.seconds)
                 viewModel.pomodoroCount.value shouldBe 0
             }
@@ -160,7 +160,7 @@ class PomodoroViewModelTest : FunSpec() {
             val viewModel = PomodoroViewModel(pomodoroDuration = 5.seconds)
             viewModel.state.test {
                 viewModel.start()
-                skipItems(3)
+                skipItems(4)
                 viewModel.stop()
                 awaitItem() shouldBe PomodoroState.Pomodoro.Idle(5.seconds)
                 viewModel.pomodoroCount.value shouldBe 0
